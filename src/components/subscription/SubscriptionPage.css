@@ -1,0 +1,119 @@
+.subscription-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.subscription-content {
+  margin-top: 2rem;
+}
+
+.subscription-card {
+  background: rgba(255,255,255,0.025);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+  box-shadow: 0 4px 28px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.07);
+}
+.subscription-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.85), transparent);
+  opacity: 0.4;
+}
+
+.subscription-card.premium-active {
+  border-color: rgba(255,255,255,0.08);
+  box-shadow: 0 0 40px rgba(255,255,255,0.08);
+}
+
+.subscription-card .card-header {
+  padding: 1.75rem 2.25rem;
+  background: rgba(255,255,255,0.02);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.subscription-card.premium-active .card-header {
+  background: rgba(255,255,255,0.08);
+}
+
+.subscription-card .card-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-style: italic;
+}
+
+.subscription-card.premium-active .card-header h2 {
+  color: rgba(255,255,255,0.85);
+}
+
+.valid-until {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+.card-body { padding: 2.25rem; }
+
+.premium-features-list {
+  list-style: none; padding: 0;
+  margin: 1.5rem 0 2rem;
+  display: grid; gap: 10px;
+}
+
+.premium-features-list li {
+  display: flex; align-items: center; gap: 0.75rem;
+  font-size: 0.92rem; color: var(--text-primary);
+  background: rgba(255,255,255,0.025);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,255,255,0.07);
+  transition: border-color var(--transition), background var(--transition);
+}
+.premium-features-list li:hover { border-color: rgba(255,255,255,0.14); background: rgba(255,255,255,0.04); }
+
+.upgrade-btn {
+  width: 100%; padding: 14px;
+  font-size: 0.85rem; font-weight: 700;
+  background: rgba(255,255,255,0.85);
+  border: none; border-radius: var(--radius-sm);
+  cursor: pointer; color: #000000;
+  transition: all var(--transition);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  font-family: var(--font-body);
+  box-shadow: 0 2px 16px rgba(255,255,255,0.08);
+}
+.upgrade-btn:hover { background: rgba(255,255,255,0.7); transform: translateY(-1px); box-shadow: 0 4px 24px rgba(255,255,255,0.08); }
+.upgrade-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.premium-management { text-align: center; }
+.premium-management p { color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.88rem; }
+
+.premium-actions {
+  margin-top: 2rem; padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.cancel-btn { border-color: var(--accent-red); color: var(--accent-red); }
+.cancel-btn:hover { background: rgba(196,106,58,0.1); border-color: var(--accent-red); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .subscription-card .card-header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 1.25rem 1.25rem; }
+  .card-body { padding: 1.25rem; }
+  .subscription-card .card-header h2 { font-size: 1.2rem; }
+}

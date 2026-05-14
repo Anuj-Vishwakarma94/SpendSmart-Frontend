@@ -1,0 +1,554 @@
+/* ═══════════════════════════════════════════════════════════
+   SPENDSMART — LANDING PAGE
+   Performance: all animations use only transform/opacity
+   (compositor-only properties — zero layout/paint per frame)
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Base ── */
+.landing-root {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #0c0f0f;
+  color: #f0f0f0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Navbar ── */
+.lp-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(9, 9, 9, 0.6);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.lp-nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.lp-nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lp-nav-logo-icon {
+  color: #34d399;
+  display: flex;
+}
+.lp-nav-logo-text {
+  font-weight: 700;
+  color: #fff;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+.lp-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.lp-nav-links a {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  transition: color 0.18s;
+}
+.lp-nav-links a:hover { color: #fff; }
+.lp-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lp-btn-ghost {
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.75);
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s;
+  font-family: inherit;
+  line-height: 1.5;
+}
+.lp-btn-ghost:hover {
+  border-color: rgba(255,255,255,0.4);
+  color: #fff;
+}
+.lp-btn-primary {
+  background: #34d399;
+  color: #000;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s;
+  font-family: inherit;
+  line-height: 1.5;
+}
+.lp-btn-primary:hover { background: #6ee7b7; }
+
+.lp-nav-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.65);
+  cursor: pointer;
+  padding: 4px;
+  line-height: 0;
+}
+.lp-nav-hamburger:hover { color: #fff; }
+
+.lp-nav-mobile {
+  background: rgba(9,9,9,0.97);
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.lp-nav-mobile a {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  transition: color 0.18s;
+}
+.lp-nav-mobile a:hover { color: #fff; }
+.lp-nav-mobile-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.lp-nav-mobile-btns .lp-btn-ghost,
+.lp-nav-mobile-btns .lp-btn-primary {
+  padding: 10px 16px;
+  width: 100%;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .lp-nav-links, .lp-nav-actions { display: none; }
+  .lp-nav-hamburger { display: flex; }
+}
+
+/* ── Hero ── */
+.lp-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #0c0f0f;
+}
+
+/* Background: single Canvas — the rAF loop draws everything into one bitmap.
+   No SVG DOM nodes, no CSS animation cost on individual paths. */
+.lp-hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.lp-hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.lp-hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 0 24px;
+  max-width: 860px;
+}
+
+/* Title words animate in with translateY — GPU composited */
+.lp-hero-title {
+  font-size: clamp(2.6rem, 7.5vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.06;
+  color: #fff;
+  margin-bottom: 28px;
+}
+.lp-word {
+  display: inline-block;
+  margin-right: 0.22em;
+  opacity: 0;
+  animation: wordSlideUp 0.65s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes wordSlideUp {
+  from { opacity: 0; transform: translateY(36px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.lp-hero-subtitle {
+  color: rgba(255,255,255,0.52);
+  font-size: 1.05rem;
+  line-height: 1.72;
+  max-width: 500px;
+  margin: 0 auto 36px;
+  opacity: 0;
+  animation: fadeUp 0.75s 0.42s cubic-bezier(0.22,1,0.36,1) both;
+}
+.lp-hero-cta-wrap {
+  display: inline-block;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(0,0,0,0.12));
+  padding: 1px;
+  border-radius: 16px;
+  opacity: 0;
+  animation: fadeUp 0.75s 0.58s cubic-bezier(0.22,1,0.36,1) both;
+}
+.lp-hero-cta {
+  border-radius: 15px;
+  padding: 13px 30px;
+  font-size: 0.97rem;
+  font-weight: 600;
+  backdrop-filter: blur(6px);
+  background: rgba(255,255,255,0.94);
+  color: #000;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  /* Only transform/opacity on hover — no layout change */
+  transition: opacity 0.2s, transform 0.2s;
+}
+.lp-hero-cta:hover {
+  opacity: 0.92;
+  transform: translateY(-2px);
+}
+.lp-hero-cta-arrow {
+  transition: transform 0.25s;
+  opacity: 0.65;
+  display: inline-block;
+}
+.lp-hero-cta:hover .lp-hero-cta-arrow {
+  transform: translateX(4px);
+  opacity: 1;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Features ── */
+.lp-features {
+  padding: 112px 0;
+  background: #121414;
+}
+.lp-section-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.lp-section-badge-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.lp-badge {
+  display: inline-block;
+  background: rgba(52,211,153,0.1);
+  color: #34d399;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 100px;
+  border: 1px solid rgba(52,211,153,0.2);
+}
+.lp-section-title {
+  text-align: center;
+  font-size: clamp(1.9rem, 3.8vw, 2.9rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: #fff;
+  margin-bottom: 10px;
+}
+.lp-section-sub {
+  text-align: center;
+  color: rgba(255,255,255,0.42);
+  font-size: 1rem;
+  max-width: 460px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+.lp-features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 56px;
+}
+@media (max-width: 900px) { .lp-features-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 580px) { .lp-features-grid { grid-template-columns: 1fr; } }
+
+/* Cards: invisible by default, animate in on intersection.
+   Hover uses translateY — compositor only, no conflict with fill-mode
+   because we switch to a separate class rather than animating the base state. */
+.lp-feature-card {
+  background: #18181b;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 24px;
+  cursor: default;
+  /* start invisible — will be revealed by JS class */
+  opacity: 0;
+  transform: translateY(32px);
+  /* hover handled via CSS :hover below once visible */
+  transition: transform 0.25s ease, border-color 0.25s ease;
+  will-change: transform, opacity;
+}
+.lp-feature-card--visible {
+  animation: revealUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+/* After animation ends the card sits at opacity:1, transform:none
+   thanks to animation-fill-mode:both + the `to` state below.
+   Hover then freely uses transform with no conflict. */
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.lp-feature-card--visible:hover {
+  transform: translateY(-4px);
+  border-color: rgba(52,211,153,0.28);
+}
+.lp-feature-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  color: #34d399;
+  flex-shrink: 0;
+}
+.lp-feature-card h3 {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.92rem;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.lp-feature-card p {
+  color: rgba(255,255,255,0.42);
+  font-size: 0.85rem;
+  line-height: 1.62;
+}
+
+/* ── Stats ── */
+.lp-stats {
+  padding: 72px 0;
+  background: #0c0f0f;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.lp-stats-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+}
+@media (max-width: 700px) { .lp-stats-inner { flex-direction: column; } }
+
+.lp-stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 28px 16px;
+  opacity: 0;
+  transform: translateY(18px);
+  will-change: transform, opacity;
+}
+.lp-stat-item--bordered {
+  border-left: 1px solid rgba(255,255,255,0.07);
+}
+@media (max-width: 700px) {
+  .lp-stat-item--bordered {
+    border-left: none;
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+}
+.lp-stat-item--visible {
+  animation: revealUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+.lp-stat-bar {
+  width: 36px;
+  height: 2px;
+  background: #34d399;
+  border-radius: 99px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+.lp-stat-value {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.lp-stat-label {
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.32);
+  margin-top: 8px;
+}
+
+/* ── CTA ── */
+.lp-cta {
+  padding: 112px 0;
+  background: #121414;
+  position: relative;
+  overflow: hidden;
+}
+.lp-cta-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(52,211,153,0.07) 0%, transparent 68%);
+}
+.lp-cta-box {
+  position: relative;
+  z-index: 10;
+  max-width: 660px;
+  margin: 0 auto;
+  padding: 0 24px;
+  opacity: 0;
+  transform: translateY(28px);
+  will-change: transform, opacity;
+}
+.lp-cta-box--visible {
+  animation: revealUp 0.6s cubic-bezier(0.22,1,0.36,1) both;
+}
+.lp-cta-card {
+  border-radius: 22px;
+  padding: 56px 64px;
+  background: linear-gradient(135deg, #18181b 0%, #0c1a13 100%);
+  border: 1px solid rgba(52,211,153,0.18);
+  text-align: center;
+}
+@media (max-width: 580px) { .lp-cta-card { padding: 36px 24px; } }
+.lp-cta-card h2 {
+  font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.22;
+  color: #fff;
+  margin-bottom: 14px;
+}
+.lp-cta-card p {
+  color: rgba(255,255,255,0.42);
+  font-size: 0.92rem;
+  margin-bottom: 28px;
+}
+.lp-cta-btn {
+  background: #34d399;
+  color: #000;
+  font-weight: 700;
+  font-size: 0.97rem;
+  padding: 12px 30px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.18s;
+  box-shadow: 0 0 18px rgba(52,211,153,0.22);
+  font-family: inherit;
+}
+.lp-cta-btn:hover {
+  background: #6ee7b7;
+  transform: translateY(-1px);
+}
+
+/* ── Footer ── */
+.lp-footer {
+  padding: 36px 0;
+  background: #0c0f0f;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.lp-footer-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.lp-footer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.lp-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+}
+.lp-footer-brand-icon {
+  color: #34d399;
+  display: flex;
+  align-items: center;
+}
+.lp-footer-sep {
+  color: rgba(255,255,255,0.14);
+  margin: 0 2px;
+}
+.lp-footer-tagline {
+  font-weight: 400;
+  color: rgba(255,255,255,0.22);
+}
+.lp-footer-links {
+  display: flex;
+  gap: 22px;
+}
+.lp-footer-links a {
+  color: rgba(255,255,255,0.32);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.18s;
+}
+.lp-footer-links a:hover { color: #fff; }
+.lp-footer-copy {
+  color: rgba(255,255,255,0.15);
+  font-size: 0.72rem;
+  text-align: center;
+  margin-top: 22px;
+}
+
+/* ── Additional mobile polish ── */
+@media (max-width: 480px) {
+  .lp-hero-title { font-size: clamp(2rem, 10vw, 3rem); }
+  .lp-hero-subtitle { font-size: 0.95rem; }
+  .lp-hero-cta { padding: 11px 22px; font-size: 0.9rem; }
+  .lp-footer-top { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .lp-footer-links { flex-wrap: wrap; gap: 14px; }
+  .lp-stat-value { font-size: 2.2rem; }
+  .lp-features { padding: 72px 0; }
+  .lp-cta { padding: 72px 0; }
+}
