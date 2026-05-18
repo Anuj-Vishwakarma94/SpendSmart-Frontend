@@ -162,7 +162,7 @@ const BudgetFormModal = ({ onSaved, onClose }) => {
           </div>
           <div className="form-group">
             <label className="form-label">Limit Amount *</label>
-            <input required type="number" min="1" step="100" className="form-control" placeholder="e.g. 10000"
+            <input required type="number" min="0" step="100" className="form-control" placeholder="e.g. 10000"
               value={form.limitAmount} onChange={e => setForm(p => ({ ...p, limitAmount: e.target.value }))} />
           </div>
           <div className="form-group">

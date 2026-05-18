@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { RecurringService } from '../../services/api';
+import { RecurringService, CategoryService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import './Recurring.css';
@@ -49,6 +49,14 @@ export const RecurringPage = () => {
       toast.success('Rule deactivated');
       load();
     } catch (_) { toast.error('Failed'); }
+  };
+
+  const handleActivate = async (id) => {
+    try {
+      await RecurringService.update(id, { isActive: true });
+      toast.success('Rule activated');
+      load();
+    } catch (_) { toast.error('Failed to activate'); }
   };
 
   const handleDelete = async (id) => {
@@ -192,9 +200,13 @@ export const RecurringPage = () => {
                           Process Now
                         </button>
                       )}
-                      {r.isActive && (
+                      {r.isActive ? (
                         <button className="btn btn-secondary btn-sm" onClick={() => handleDeactivate(r.recurringId)}>
                           Pause
+                        </button>
+                      ) : (
+                        <button className="btn btn-primary btn-sm" onClick={() => handleActivate(r.recurringId)}>
+                          Activate
                         </button>
                       )}
                       <button className="btn btn-danger btn-sm" onClick={() => handleDelete(r.recurringId)}>
@@ -226,12 +238,17 @@ const PAYMENT_METHODS = ['CASH','CARD','UPI','BANK_TRANSFER','WALLET'];
 const RecurringFormModal = ({ onSaved, onClose }) => {
   const { user } = useAuth();
   const [form, setForm] = useState({
-    title: '', amount: '', type: 'EXPENSE', frequency: 'MONTHLY',
+    title: '', amount: '', type: 'EXPENSE', frequency: 'MONTHLY', categoryId: '',
     startDate: new Date().toISOString().split('T')[0],
     endDate: '', paymentMethod: 'CASH',
     description: '', currency: user?.currency || 'INR',
   });
   const [saving, setSaving] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    CategoryService.getAll().then(setCategories).catch(console.error);
+  }, []);
 
   const handle = e => {
     const { name, value } = e.target;
@@ -246,6 +263,7 @@ const RecurringFormModal = ({ onSaved, onClose }) => {
         ...form,
         amount: parseFloat(form.amount),
         endDate: form.endDate || null,
+        categoryId: form.categoryId ? parseInt(form.categoryId) : null,
       });
       toast.success('Recurring rule created!');
       onSaved();
@@ -281,11 +299,21 @@ const RecurringFormModal = ({ onSaved, onClose }) => {
               {['EXPENSE','INCOME'].map(t => (
                 <button key={t} type="button"
                   className={`type-toggle-btn ${form.type === t ? (t === 'EXPENSE' ? 'active-expense' : 'active-income') : ''}`}
-                  onClick={() => setForm(p => ({ ...p, type: t }))}>
+                  onClick={() => setForm(p => ({ ...p, type: t, categoryId: '' }))}>
                   {t === 'EXPENSE' ? '💸 Expense' : '💰 Income'}
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Category</label>
+            <select name="categoryId" className="form-control" value={form.categoryId} onChange={handle}>
+              <option value="">Select a category...</option>
+              {categories.filter(c => c.type === form.type).map(c => (
+                <option key={c.categoryId} value={c.categoryId}>{c.icon} {c.name}</option>
+              ))}
+            </select>
           </div>
 
           <div className="form-group">

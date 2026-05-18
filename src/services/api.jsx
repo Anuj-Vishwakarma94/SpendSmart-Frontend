@@ -1,11 +1,8 @@
 import axios from 'axios';
 
-// ─── Base URL (uses VITE_API_URL on Render, localhost for local dev) ─────────
-const BASE_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api`;
-
 // ─── Base instances ───────────────────────────────────────
-const authApi = axios.create({ baseURL: BASE_URL });
-const expenseApi = axios.create({ baseURL: BASE_URL });
+const authApi = axios.create({ baseURL: 'http://localhost:8080/api' });
+const expenseApi = axios.create({ baseURL: 'http://localhost:8080/api' });
 
 // ─── Token interceptor helper ─────────────────────────────
 const addAuthHeader = (config) => {
@@ -33,7 +30,7 @@ const handleError = (error) => {
 authApi.interceptors.response.use(r => r, handleError);
 expenseApi.interceptors.response.use(r => r, handleError);
 
-const incomeApi = axios.create({ baseURL: BASE_URL });
+const incomeApi = axios.create({ baseURL: 'http://localhost:8080/api' });
 incomeApi.interceptors.request.use(addAuthHeader);
 incomeApi.interceptors.response.use(r => r, handleError);
 
@@ -92,7 +89,7 @@ export const IncomeService = {
 };
 
 // ─── Category Service ─────────────────────────────────────
-const categoryApi = axios.create({ baseURL: BASE_URL });
+const categoryApi = axios.create({ baseURL: 'http://localhost:8080/api' });
 categoryApi.interceptors.request.use(addAuthHeader);
 categoryApi.interceptors.response.use(r => r, handleError);
 
@@ -111,7 +108,7 @@ export const CategoryService = {
 };
 
 // ─── Budget Service (port 8085) ───────────────────────────
-const budgetApi = axios.create({ baseURL: BASE_URL });
+const budgetApi = axios.create({ baseURL: 'http://localhost:8080/api' });
 budgetApi.interceptors.request.use(addAuthHeader);
 budgetApi.interceptors.response.use(r => r, handleError);
 
@@ -131,7 +128,7 @@ export const BudgetService = {
 };
 
 // ─── Analytics Service (port 8086) ───────────────────────
-const analyticsApi = axios.create({ baseURL: BASE_URL });
+const analyticsApi = axios.create({ baseURL: 'http://localhost:8080/api' });
 analyticsApi.interceptors.request.use(addAuthHeader);
 analyticsApi.interceptors.response.use(r => r, handleError);
 
@@ -150,7 +147,7 @@ export const AnalyticsService = {
 };
 
 // ─── Recurring Service (port 8087) ───────────────────────
-const recurringApi = axios.create({ baseURL: BASE_URL });
+const recurringApi = axios.create({ baseURL: 'http://localhost:8080/api' });
 recurringApi.interceptors.request.use(addAuthHeader);
 recurringApi.interceptors.response.use(r => r, handleError);
 
@@ -169,7 +166,7 @@ export const RecurringService = {
 };
 
 // ─── Notification Service (port 8088) ────────────────────
-const notifApi = axios.create({ baseURL: BASE_URL });
+const notifApi = axios.create({ baseURL: 'http://localhost:8080/api' });
 notifApi.interceptors.request.use(addAuthHeader);
 notifApi.interceptors.response.use(r => r, handleError);
 
@@ -184,7 +181,7 @@ export const NotificationService = {
 };
 
 // ─── Subscription Service (port 8090) ────────────────────
-const subApi = axios.create({ baseURL: BASE_URL });
+const subApi = axios.create({ baseURL: 'http://localhost:8080/api' });
 subApi.interceptors.request.use(addAuthHeader);
 subApi.interceptors.response.use(r => r, handleError);
 
