@@ -31,7 +31,13 @@ export const CategoryPage = () => {
     try {
       const data = await CategoryService.getAll();
       setCategories(data);
-    } catch (_) { toast.error('Failed to load categories'); }
+    } catch (err) { 
+      if (err?.error === 'PREMIUM_REQUIRED') {
+        toast.error('Premium required');
+      } else {
+        toast.error('Failed to load categories'); 
+      }
+    }
     setLoading(false);
   }, []);
 

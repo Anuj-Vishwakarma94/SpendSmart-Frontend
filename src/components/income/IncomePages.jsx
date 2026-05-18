@@ -51,7 +51,13 @@ export const IncomeListPage = () => {
       setMonthTotal(mt.total || 0);
       setAllTotal(at.total || 0);
       setBreakdown(bd);
-    } catch (_) { toast.error('Failed to load incomes'); }
+    } catch (err) { 
+      if (err?.error === 'PREMIUM_REQUIRED') {
+        toast.error('Premium required');
+      } else {
+        toast.error('Failed to load incomes'); 
+      }
+    }
     setLoading(false);
   }, []);
 
