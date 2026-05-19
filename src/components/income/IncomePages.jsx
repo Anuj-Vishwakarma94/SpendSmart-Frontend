@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { IncomeService } from '../../services/api';
+import { IncomeService, CategoryService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import './Income.css';
@@ -239,7 +239,10 @@ const DEFAULT_FORM = {
   title: '', amount: '', categoryId: '',
   date: new Date().toISOString().split('T')[0],
   source: 'SALARY', notes: '',
-  isRecurring: false, recurrencePeriod: 'MONTHLY', currency: 'INR',
+  isRecurring: false, recurrencePeriod: 'MONTHLY',
+  startDate: new Date().toISOString().split('T')[0],
+  endDate: '',
+  currency: 'INR',
 };
 
 export const IncomeFormPage = () => {
@@ -248,9 +251,17 @@ export const IncomeFormPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [form, setForm]       = useState({ ...DEFAULT_FORM, currency: user?.currency || 'INR' });
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving]   = useState(false);
+  const [form, setForm]         = useState({ ...DEFAULT_FORM, currency: user?.currency || 'INR' });
+  const [loading, setLoading]   = useState(false);
+  const [saving, setSaving]     = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  // Load INCOME-type categories for the dropdown
+  useEffect(() => {
+    CategoryService.getByType('INCOME')
+      .then(setCategories)
+      .catch(() => CategoryService.getAll().then(setCategories).catch(() => {}));
+  }, []);
 
   useEffect(() => {
     if (!isEdit) return;
@@ -261,6 +272,8 @@ export const IncomeFormPage = () => {
         date: i.date, source: i.source, notes: i.notes || '',
         isRecurring: i.isRecurring,
         recurrencePeriod: i.recurrencePeriod || 'MONTHLY',
+        startDate: i.date,
+        endDate: '',
         currency: i.currency,
       }))
       .catch(() => { toast.error('Failed to load income'); navigate('/incomes'); })
@@ -279,8 +292,10 @@ export const IncomeFormPage = () => {
       const payload = {
         ...form,
         amount: parseFloat(form.amount),
-        categoryId: form.categoryId || null,
+        categoryId: form.categoryId ? parseInt(form.categoryId) : null,
         recurrencePeriod: form.isRecurring ? form.recurrencePeriod : null,
+        startDate: form.isRecurring ? (form.startDate || form.date) : null,
+        endDate: form.isRecurring && form.endDate ? form.endDate : null,
       };
       if (isEdit) {
         await IncomeService.update(id, payload);
@@ -346,6 +361,18 @@ export const IncomeFormPage = () => {
             </div>
           </div>
 
+          <div className="form-row">
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">Category</label>
+              <select name="categoryId" className="form-control" value={form.categoryId} onChange={handleChange}>
+                <option value="">— No category —</option>
+                {categories.map(c => (
+                  <option key={c.categoryId} value={c.categoryId}>{c.icon ? `${c.icon} ` : ''}{c.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
           <div className="form-group">
             <label className="form-label">Notes</label>
             <textarea name="notes" rows={3} className="form-control" placeholder="Optional notes…"
@@ -361,18 +388,33 @@ export const IncomeFormPage = () => {
             </label>
 
             {form.isRecurring && (
-              <div className="form-group" style={{ marginTop: 12 }}>
-                <label className="form-label">Recurrence Frequency *</label>
-                <div className="period-pills">
-                  {RECURRENCE_PERIODS.map(p => (
-                    <button
-                      key={p} type="button"
-                      className={`period-pill ${form.recurrencePeriod === p ? 'active' : ''}`}
-                      onClick={() => setForm(f => ({ ...f, recurrencePeriod: p }))}
-                    >
-                      {p}
-                    </button>
-                  ))}
+              <div style={{ marginTop: 12 }}>
+                <div className="form-group">
+                  <label className="form-label">Recurrence Frequency *</label>
+                  <div className="period-pills">
+                    {RECURRENCE_PERIODS.map(p => (
+                      <button
+                        key={p} type="button"
+                        className={`period-pill ${form.recurrencePeriod === p ? 'active' : ''}`}
+                        onClick={() => setForm(f => ({ ...f, recurrencePeriod: p }))}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="form-row" style={{ marginTop: 12 }}>
+                  <div className="form-group" style={{ flex: 1 }}>
+                    <label className="form-label">Start Date *</label>
+                    <input name="startDate" type="date" required className="form-control"
+                      value={form.startDate} onChange={handleChange} />
+                  </div>
+                  <div className="form-group" style={{ flex: 1 }}>
+                    <label className="form-label">End Date <span style={{ color: '#888', fontWeight: 400 }}>(optional)</span></label>
+                    <input name="endDate" type="date" className="form-control"
+                      value={form.endDate} onChange={handleChange}
+                      min={form.startDate} />
+                  </div>
                 </div>
               </div>
             )}
